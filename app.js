@@ -2,6 +2,10 @@
 const express = require('express')
 const app = express();
 
+// Position of Middleware matters. Placing it at incorrect place 
+// will not work
+require('express-async-errors')
+
 const tasks = require('./routes/tasks')
 const connectDB = require('./db/connect')
 require('dotenv').config()
