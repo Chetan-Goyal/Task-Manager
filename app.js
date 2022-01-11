@@ -22,6 +22,10 @@ var corsOptions = {
   origin: "http://localhost:8081"
 };
 
+app.get('/health-check', (req, res) => {
+  res.send('ok')
+})
+
 app.use(cors(corsOptions));
 app.use(express.static('./public'))
 app.use(express.json())
