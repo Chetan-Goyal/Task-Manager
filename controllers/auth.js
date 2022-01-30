@@ -89,7 +89,7 @@ const signin = (req, res) => {
       }
 
       var token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
-        expiresIn: 86400 // 24 hours
+        expiresIn: 86400 * 7 // 7 days
       });
 
       var authorities = [];
@@ -105,6 +105,24 @@ const signin = (req, res) => {
         accessToken: token
       });
     });
+
 };
 
-module.exports = { signup, signin }
+const checkToken = (req, res) => {
+  let token = req.body.token;
+  console.log(req.body);
+
+  if (!token) {
+    return res.status(403).send({ message: "No token provided!" });
+  }
+
+  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
+    req.userId = decoded.id;
+    return res.status(200).send({ message: 'Success!' });
+  });
+};
+
+module.exports = { signup, signin, checkToken }
