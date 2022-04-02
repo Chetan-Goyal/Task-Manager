@@ -1,7 +1,14 @@
 const mongoose = require('mongoose')
+const { colorValidator } = require('./validators/color_validator')
+
+
 
 const TaskSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
     name: {
       type: String,
       required: [true, 'name is required'],
@@ -15,12 +22,25 @@ const TaskSchema = new mongoose.Schema(
     category: {
       type: String,
       trim: true,
-      default: null,
+      default: null
     },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
+    isReminderSet: {
+      type: Boolean,
+      default: false
+    },
+    isImportant: {
+      type: Boolean,
+      default: false
+    },
+    color: {
+      type: String,
+      validate: [colorValidator, 'Invalid color'],
+    },
+
+    deadline: { type: Date, default: null },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now },
+
   }
 )
 
