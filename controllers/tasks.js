@@ -9,6 +9,11 @@ const getAllTasks = async (req, res) => {
 const createNewTask = async (req, res) => {
   var taskData = req.body
   taskData.userId = req.userId
+  
+  var _date = new Date(taskData.deadline);
+  
+  taskData.deadline = _date;
+  
   const task = await Task.create(taskData)
   res.status(201).json({ task })
 }
