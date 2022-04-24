@@ -33,6 +33,22 @@ const getTask = async (req, res) => {
   }
 }
 
+const completeTask = async (req, res) => {
+  const { id: taskID } = req.params
+
+  const searchTask = await Task.findOne({ _id: taskID })
+  if (searchTask.userId != req.userId) {
+    return res.status(401).json({ msg: `Unauthorised to update task with ID:  ${req.params.id}` })
+  }
+
+  const task = await Task.findOneAndUpdate({ _id: taskID }, {completed: true}, { new: true, runValidators: true })
+
+  if (!task)
+    return res.status(404).json({ msg: `No Task with ID: ${req.params.id}` })
+
+  res.status(200).json({ task })
+}
+
 const updateTask = async (req, res) => {
   const { id: taskID } = req.params
 
@@ -66,4 +82,4 @@ const deleteTask = async (req, res) => {
 }
 
 
-module.exports = { getAllTasks, createNewTask, getTask, updateTask, deleteTask }
+module.exports = { getAllTasks, createNewTask, getTask, updateTask, deleteTask, completeTask }
