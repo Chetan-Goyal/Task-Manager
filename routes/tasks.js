@@ -1,5 +1,5 @@
 const express = require('express')
-const { getAllTasks, createNewTask, getTask, updateTask, deleteTask } = require('../controllers/tasks')
+const { getAllTasks, createNewTask, getTask, updateTask, deleteTask, completeTask } = require('../controllers/tasks')
 const { getAllTasksAdmin, getTaskAdmin, updateTaskAdmin, deleteTaskAdmin } = require('../controllers/admin-tasks');
 
 const {
@@ -18,6 +18,6 @@ router.route('/admin/:id').get([verifyToken, isStaff], getTaskAdmin).patch([veri
 // User Routes
 router.route('/').get([verifyToken], getAllTasks).post([verifyToken], createNewTask)
 router.route('/:id').get([verifyToken], getTask).patch([verifyToken], updateTask).delete([verifyToken], deleteTask)
-
+router.route('/complete/:id').get([verifyToken], completeTask)
 
 module.exports = router

@@ -2,7 +2,13 @@ const models = require('../models')
 const Task = models.Task
 
 const getAllTasks = async (req, res) => {
-  const tasks = await Task.find({ userId: req.userId })
+  const tasks = await Task.find({
+    $and: [
+      { userId: { $eq: req.userId } },
+      { completed: { $eq: false } },
+    ]
+  }
+  )
   res.status(200).json({ tasks })
 }
 
@@ -10,11 +16,12 @@ const createNewTask = async (req, res) => {
   var taskData = req.body
   taskData.userId = req.userId
   
+  // Modifying Date to correct format
   var _date = new Date(taskData.deadline);
-  
   taskData.deadline = _date;
-  
+
   const task = await Task.create(taskData)
+  
   res.status(201).json({ task })
 }
 
@@ -31,6 +38,22 @@ const getTask = async (req, res) => {
   } else {
     res.status(200).json({ task })
   }
+}
+
+const completeTask = async (req, res) => {
+  const { id: taskID } = req.params
+
+  const searchTask = await Task.findOne({ _id: taskID })
+  if (searchTask.userId != req.userId) {
+    return res.status(401).json({ msg: `Unauthorised to update task with ID:  ${req.params.id}` })
+  }
+
+  const task = await Task.findOneAndUpdate({ _id: taskID }, { completed: true }, { new: true, runValidators: true })
+  console.log(task)
+  if (!task)
+    return res.status(404).json({ msg: `No Task with ID: ${req.params.id}` })
+
+  res.status(200).json({ task })
 }
 
 const updateTask = async (req, res) => {
@@ -66,4 +89,4 @@ const deleteTask = async (req, res) => {
 }
 
 
-module.exports = { getAllTasks, createNewTask, getTask, updateTask, deleteTask }
+module.exports = { getAllTasks, createNewTask, getTask, updateTask, deleteTask, completeTask }
